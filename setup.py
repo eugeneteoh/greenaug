@@ -13,6 +13,10 @@ setup(
         "chromakey[torch] @ git+https://github.com/eugeneteoh/chromakey.git@v0.2.1",
         "av",
         "requests",
+        "einops",
     ],
-    extras_require={"dev": ["pre-commit", "ruff"]},
+    extras_require={
+        "generative": ["diffusers", "transformers", "accelerate"],
+        "dev": ["pre-commit", "ruff"],
+    },
 )
