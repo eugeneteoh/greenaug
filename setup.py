@@ -10,8 +10,9 @@ setup(
     install_requires=[
         "torch",
         "torchvision",
-        "chromakey[torch] @ git+https://github.com/eugeneteoh/chromakey.git",
-        "av"
+        "chromakey[torch] @ git+https://github.com/eugeneteoh/chromakey.git@v0.2.1",
+        "av",
+        "requests"
     ],
     extras_require={
         "dev": ["pre-commit", "ruff"]

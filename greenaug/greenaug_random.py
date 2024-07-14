@@ -1,5 +1,5 @@
 import torch
-from chromakey import chroma_key_vectorized
+from chromakey.torch import chroma_key
 
 
 class GreenAugRandom(torch.nn.Module):
@@ -8,7 +8,7 @@ class GreenAugRandom(torch.nn.Module):
         self.return_mask = return_mask
 
     def forward(self, image, keycolor, background_image=None, tola=10, tolb=30, mask_threshold=None):
-        image_out, mask = chroma_key_vectorized(image, keycolor=keycolor, background_image=background_image, tola=tola, tolb=tolb)
+        image_out, mask = chroma_key(image, keycolor=keycolor, background_image=background_image, tola=tola, tolb=tolb)
         mask = 1 - mask
         if mask_threshold is not None:
             mask = (mask > mask_threshold).float()

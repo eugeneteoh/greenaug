@@ -6,9 +6,11 @@ import numpy as np
 import requests
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+from torchvision.io import write_video
 from torchvision.transforms import v2
 
 from greenaug import GreenAugRandom
+
 
 def download_file(url, save_directory='.'):
     save_path = Path(save_directory)
@@ -46,19 +48,21 @@ frames = np.asarray(frames) # (T, H, W, C)
 dataset = TensorDataset(torch.as_tensor(frames))
 dataloader = DataLoader(dataset, batch_size=8, shuffle=False)
 
-# transforms = v2.Compose([
-#     v2.ToDtype(torch.float32, scale=True),
-#     GreenAugRandom()
-# ])
 augmenter = GreenAugRandom()
 
+images_aug_seq = []
 for batch in dataloader:
     images = batch[0]
     b, h, w, c = images.shape
     # convert to float32 and scale to [0, 1]
-    images = images.float()
+    images = images.float() / 255
     images = images.permute(0, 3, 1, 2)  # (B, H, W, C) -> (B, C, H, W)
 
-    images_aug = augmenter(images, keycolor=["#00FF00"]*b)
-    breakpoint()
+    images_aug = augmenter(images, keycolor=["#439f82"]*b, tola=30, tolb=35)
+    images_aug_seq.append(images_aug)
+
+images_aug_seq = torch.cat(images_aug_seq, dim=0)
+images_aug_seq = (images_aug_seq.permute(0, 2, 3, 1) * 255).to(torch.uint8)
+write_video("data/out.mp4", images_aug_seq, 10)
+
 
