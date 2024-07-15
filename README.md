@@ -1,4 +1,4 @@
-# GreenAug: Green Screen Augmentation Enables Scene Generalisation
+# GreenAug: Green Screen Augmentation Enables Scene Generalisation in Robotic Manipulation
 
 [Eugene Teoh](https://eugeneteoh.com/), [Sumit Patidar](https://rocketsumit.github.io/), [Xiao Ma](https://yusufma03.github.io/), [Stephen James](https://stepjam.github.io/)
 
