@@ -1,11 +1,9 @@
 from pathlib import Path
 
-import av
-import numpy as np
 import torch
 from huggingface_hub import hf_hub_download
 from torch.utils.data import DataLoader, TensorDataset
-from torchvision.io import write_video
+from torchvision.io import read_video, write_video
 
 from greenaug import GreenAugGenerative
 
@@ -15,16 +13,7 @@ video_path = hf_hub_download(
     filename="GreenScreenDemoCollection/open_drawer_green_screen.mp4",
 )
 
-# Load video
-container = av.open(video_path)
-frames = []
-for i, frame in enumerate(container.decode(video=0)):
-    if i > 10:
-        break
-    img = frame.to_ndarray(format="rgb24")
-    frames.append(img)
-container.close()
-frames = np.asarray(frames)  # (T, H, W, C)
+frames, _, _ = read_video(video_path, end_pts=5, pts_unit="sec")
 
 dataset = TensorDataset(torch.as_tensor(frames))
 dataloader = DataLoader(dataset, batch_size=1, shuffle=False)

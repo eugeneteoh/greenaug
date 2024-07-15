@@ -1,13 +1,34 @@
+import random
 from pathlib import Path
 
-import av
 import numpy as np
 import torch
 from huggingface_hub import hf_hub_download, snapshot_download
-from torch.utils.data import DataLoader, TensorDataset
-from torchvision.io import write_video
+from PIL import Image
+from torch.utils.data import DataLoader, Dataset
+from torchvision.io import read_video, write_video
+from torchvision.transforms.v2.functional import resize
 
 from greenaug import GreenAugRandom
+
+seed = 42
+
+
+class CustomDataset(Dataset):
+    def __init__(self, images, background_root):
+        self.images = images
+        self.background_paths = sorted(Path(background_root).glob("**/*.png"))
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+        image = self.images[idx]
+        bg_path = random.choice(self.background_paths)
+        bg = Image.open(bg_path).convert("RGB")
+        bg = np.array(bg)
+        return image, bg
+
 
 video_path = hf_hub_download(
     repo_id="eugeneteoh/greenaug",
@@ -18,33 +39,29 @@ video_path = hf_hub_download(
 background_root = snapshot_download(
     repo_id="eugeneteoh/mil_data", repo_type="dataset", allow_patterns="*.png"
 )
-background_root = Path(background_root)
 
-# Load video
-container = av.open(video_path)
-frames = []
-for i, frame in enumerate(container.decode(video=0)):
-    if i > 10:
-        break
-    img = frame.to_ndarray(format="rgb24")
-    frames.append(img)
-container.close()
-frames = np.asarray(frames)  # (T, H, W, C)
+frames, _, _ = read_video(video_path, end_pts=5, pts_unit="sec")
 
-dataset = TensorDataset(torch.as_tensor(frames))
+dataset = CustomDataset(frames, background_root)
 dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
 augmenter = GreenAugRandom()
 
 images_aug_seq = []
 for batch in dataloader:
-    images = batch[0]
+    images, background = batch
     b, h, w, c = images.shape
     # convert to float32 and scale to [0, 1]
     images = images.float() / 255
     images = images.permute(0, 3, 1, 2)  # (B, H, W, C) -> (B, C, H, W)
 
-    images_aug = augmenter(images, keycolor=["#439f82"] * b, tola=30, tolb=35)
+    background = background.float() / 255
+    background = background.permute(0, 3, 1, 2)
+    background = resize(background, (h, w), antialias=True)
+
+    images_aug = augmenter(
+        images, keycolor=["#439f82"] * b, tola=30, tolb=35, background_image=background
+    )
     images_aug_seq.append(images_aug)
 
 images_aug_seq = torch.cat(images_aug_seq, dim=0)
