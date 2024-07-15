@@ -54,7 +54,6 @@ Check examples under [examples/](examples/).
 
 ```python
 import torch
-from torchvision.transforms import v2
 from greenaug import GreenAugRandom
 
 augmenter = GreenAugRandom()  # This is a torch.nn.Module
