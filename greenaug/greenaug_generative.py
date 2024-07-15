@@ -40,9 +40,10 @@ class GreenAugGenerative(torch.nn.Module):
         self.inpainter = self.inpainter.to(device)
 
     def _get_depth_map(self, images):
+        device = images.device
         images = self._feature_extractor(
             images=images, return_tensors="pt"
-        ).pixel_values.to(self.device)
+        ).pixel_values.to(device)
         with torch.no_grad(), torch.autocast("cuda"):
             depth_map = self.depth_estimator(images).predicted_depth
 
@@ -59,7 +60,9 @@ class GreenAugGenerative(torch.nn.Module):
 
         return images
 
-    def forward(self, image, keycolor, prompt, tola=10, tolb=30, num_inference_steps=4):
+    def forward(
+        self, image, keycolor, inpaint_text, tola=10, tolb=30, num_inference_steps=4
+    ):
         b, c, h, w = image.shape
 
         image_out, mask = chroma_key(
@@ -78,7 +81,7 @@ class GreenAugGenerative(torch.nn.Module):
         image_depth = image_depth.float()
 
         image_out = self.inpainter(
-            prompt=prompt,
+            prompt=inpaint_text,
             image=image_source_for_inpaint,
             control_image=image_depth,
             mask_image=image_mask_for_inpaint,  # Use mask of background
@@ -88,4 +91,7 @@ class GreenAugGenerative(torch.nn.Module):
             output_type="pt",
         )
         out = resize(image_out.images, (h, w), antialias=True)
+
+        if self.return_mask:
+            return out, mask
         return out

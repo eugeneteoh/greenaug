@@ -16,7 +16,12 @@ setup(
         "einops",
     ],
     extras_require={
-        "generative": ["diffusers", "transformers", "accelerate"],
+        "generative": [
+            "diffusers",
+            "transformers",
+            "accelerate",
+            "groundingdino @ git+https://github.com/IDEA-Research/GroundingDINO.git",
+        ],
         "dev": ["pre-commit", "ruff"],
     },
 )
