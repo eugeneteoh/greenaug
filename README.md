@@ -48,6 +48,8 @@ Then see the example below.
 
 ## Example Usage
 
+Check examples under [examples/](examples/).
+
 ```python
 import torch
 from torchvision.transforms import v2
