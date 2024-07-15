@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 import torch
@@ -5,7 +6,13 @@ from huggingface_hub import hf_hub_download
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision.io import read_video, write_video
 
-from greenaug.generative_augmentation import GenerativeAugmentation
+from greenaug.greenaug_mask import GreenAugMask
+
+seed = 42
+
+argparse = argparse.ArgumentParser()
+argparse.add_argument("--checkpoint", type=str)
+args = argparse.parse_args()
 
 video_path = hf_hub_download(
     repo_id="eugeneteoh/greenaug",
@@ -15,11 +22,10 @@ video_path = hf_hub_download(
 
 frames, _, _ = read_video(video_path, end_pts=5, pts_unit="sec")
 
-
-dataset = TensorDataset(torch.as_tensor(frames))
+dataset = TensorDataset(frames)
 dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
-augmenter = GenerativeAugmentation(device="cpu")
+augmenter = GreenAugMask(checkpoint=args.checkpoint).to("cpu")
 
 images_aug_seq = []
 for batch in dataloader:
@@ -29,19 +35,12 @@ for batch in dataloader:
     images = images.float() / 255
     images = images.permute(0, 3, 1, 2)  # (B, H, W, C) -> (B, C, H, W)
 
-    images_aug = augmenter(
-        images,
-        detect_text="drawer. robot arm. robot gripper.",
-        inpaint_text=[
-            "photorealistic kitchen, study room, washing room, living room, or bedroom"
-        ]
-        * b,
-    )
+    images_aug = augmenter(images)
     images_aug_seq.append(images_aug)
 
 images_aug_seq = torch.cat(images_aug_seq, dim=0)
 images_aug_seq = (images_aug_seq.permute(0, 2, 3, 1) * 255).to(torch.uint8)
 
-out_path = Path("assets/generative_augmentation.mp4")
+out_path = Path("assets/greenaug_mask.mp4")
 out_path.parent.mkdir(parents=True, exist_ok=True)
 write_video(out_path, images_aug_seq, 10)

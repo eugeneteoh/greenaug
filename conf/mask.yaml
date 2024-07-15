@@ -1,0 +1,31 @@
+# pre-processing parameters
+raw_root: assets/mask/raw/
+background_root: assets/mask/background/
+preprocessed_root: assets/mask/data/
+num_samples: 10000
+keycolor: "#439f82"
+tola: 30 
+tolb: 35 
+
+# network
+model:
+  architecture: Unet
+  encoder_name: resnet18
+  encoder_weights: imagenet
+
+num_epochs: 10
+log_every_n_steps: 50
+check_val_every_n_epoch: 5
+
+log_root: logs
+experiment_name: ${now:%Y-%m-%d_%H-%M-%S}
+wandb:
+  offline: true
+
+
+# common
+num_workers: 0
+batch_size: 64
+device: cpu
+seed: 0
+

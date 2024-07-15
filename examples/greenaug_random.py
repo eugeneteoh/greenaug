@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.io import read_video, write_video
 from torchvision.transforms.v2.functional import resize
 
-from greenaug import GreenAugRandom
+from greenaug.greenaug_random import GreenAugRandom
 
 seed = 42
 

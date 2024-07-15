@@ -22,6 +22,13 @@ setup(
             "accelerate",
             "groundingdino @ git+https://github.com/IDEA-Research/GroundingDINO.git",
         ],
+        "mask": [
+            "lightning",
+            "albumentations",
+            "segmentation-models-pytorch",
+            "wandb",
+            "hydra-core",
+        ],
         "dev": ["pre-commit", "ruff"],
     },
 )

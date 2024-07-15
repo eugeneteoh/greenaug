@@ -23,7 +23,6 @@ class GreenAugRandom(torch.nn.Module):
             tola=tola,
             tolb=tolb,
         )
-        mask = 1 - mask
         if mask_threshold is not None:
             mask = (mask > mask_threshold).float()
             image_out = (image * mask[:, None, :, :]).to(torch.uint8)

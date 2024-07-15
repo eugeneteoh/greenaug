@@ -42,3 +42,22 @@ conda install cuda-toolkit -c nvidia/label/cuda-12.1.1 -y
 
 pip install -e .
 ```
+
+To use GreenAugMask:
+
+```
+pip install -e ".[mask]"
+
+# Download data
+huggingface-cli download --repo-type dataset eugeneteoh/greenaug --include "GreenScreenDemoCollection/open_drawer_green_screen.mp4" --local-dir "assets/mask/raw/"               
+huggingface-cli download --repo-type dataset eugeneteoh/mil_data --include "*.png" --local-dir "assets/mask/background/"               
+
+# Preprocess data
+python scripts/preprocess_masking_data.py  
+
+# Train Masking Network
+python scripts/train_masking_network.py
+
+# Run example
+python examples/greenaug_mask.py --checkpoint /path/to/checkpoint
+```

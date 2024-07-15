@@ -5,7 +5,7 @@ from huggingface_hub import hf_hub_download
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision.io import read_video, write_video
 
-from greenaug import GreenAugGenerative
+from greenaug.greenaug_generative import GreenAugGenerative
 
 video_path = hf_hub_download(
     repo_id="eugeneteoh/greenaug",
