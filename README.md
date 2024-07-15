@@ -12,9 +12,9 @@ This repo contains the following augmentation methods:
 
 - `greenaug.greenaug_mask.GreenAugMask`: This uses a masking network to isolate backgrounds as dark pixels during inference. One first needs to train a masking network (see instructions below).
 
-- `greenaug.generative_augmentation.GenerativeAugmentation`: This is an implementation of generative augmentation (e.g. [CACTI](https://arxiv.org/abs/2212.05711), [GenAug](https://arxiv.org/abs/2302.06671), [ROSIE](https://arxiv.org/abs/2302.11550)). The implementation is close to ROSIE, but with open source models (Grounding DINO, Segment Anything, Stable Diffusion).
+- `greenaug.generative_augmentation.GenerativeAugmentation`: This is an implementation of generative augmentation (e.g. [CACTI](https://arxiv.org/abs/2212.05711), [GenAug](https://arxiv.org/abs/2302.06671), [ROSIE](https://arxiv.org/abs/2302.11550)). The implementation is close to ROSIE but with open-source models (Grounding DINO, Segment Anything, Stable Diffusion).
 
-These augmentation methods can be integrated during policy learning (imitation or reinforcement). In our experiments, we used [ACT](https://github.com/tonyzhaozh/act) and (Coarse-to-fine Q-Network)[https://github.com/younggyoseo/CQN].
+These augmentation methods can be integrated during policy learning (imitation or reinforcement). In our experiments, we used [ACT](https://github.com/tonyzhaozh/act) and [Coarse-to-fine Q-Network](https://github.com/younggyoseo/CQN).
 
 ## Installation
 
