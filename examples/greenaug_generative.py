@@ -1,40 +1,22 @@
 from pathlib import Path
-from urllib.parse import urlparse
 
 import av
 import numpy as np
-import requests
 import torch
+from huggingface_hub import hf_hub_download
 from torch.utils.data import DataLoader, TensorDataset
 from torchvision.io import write_video
 
 from greenaug import GreenAugGenerative
 
-
-def download_file(url, save_directory="."):
-    save_path = Path(save_directory)
-    save_path.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
-
-    parsed_url = urlparse(url)
-    local_filename = Path(parsed_url.path).name
-    local_path = save_path / local_filename
-
-    if not local_path.exists():
-        with requests.get(url, stream=True) as response:
-            response.raise_for_status()
-            with open(local_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    file.write(chunk)
-        print(f"Downloaded: {local_path}")
-    else:
-        print(f"File already exists: {local_path}")
-
-
-video_url = "https://huggingface.co/datasets/eugeneteoh/greenaug/resolve/main/GreenScreenDemoCollection/open_drawer_green_screen.mp4"
-download_file(video_url, "data")
+video_path = hf_hub_download(
+    repo_id="eugeneteoh/greenaug",
+    repo_type="dataset",
+    filename="GreenScreenDemoCollection/open_drawer_green_screen.mp4",
+)
 
 # Load video
-container = av.open("data/open_drawer_green_screen.mp4")
+container = av.open(video_path)
 frames = []
 for i, frame in enumerate(container.decode(video=0)):
     if i > 10:
@@ -71,4 +53,7 @@ for batch in dataloader:
 
 images_aug_seq = torch.cat(images_aug_seq, dim=0)
 images_aug_seq = (images_aug_seq.permute(0, 2, 3, 1) * 255).to(torch.uint8)
-write_video("data/greenaug_generative.mp4", images_aug_seq, 10)
+
+out_path = Path("assets/greenaug_generative.mp4")
+out_path.parent.mkdir(parents=True, exist_ok=True)
+write_video(out_path, images_aug_seq, 10)
