@@ -5,7 +5,7 @@ setup(
     description="GreenAug: Green Screen Augmentation Enables Scene Generalisation",
     author="Eugene Teoh",
     author_email="eugenetwc1@gmail.com",
-    url="greenaug.github.io",
+    url="https://greenaug.github.io",
     packages=find_packages(),
     install_requires=[
         "torch",
